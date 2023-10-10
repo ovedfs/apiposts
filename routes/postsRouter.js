@@ -6,7 +6,7 @@ const router = express.Router()
 router.get('/', getAllPosts)
 router.get('/:id', getPost)
 router.post('/', upload.single('image'), createPost)
-router.put('/:id', updatePost)
+router.put('/:id', upload.single('image'), updatePost)
 router.delete('/:id', deletePost)
 
 module.exports = router

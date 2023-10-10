@@ -1,5 +1,5 @@
 const Post = require("../models/PostModel")
-const path = require('path')
+const fs = require('fs')
 
 const getAllPosts = async (req,res) => {
   try {
@@ -46,7 +46,23 @@ const updatePost = async (req,res) => {
   try {
     const {id} = req.params
     const post = await Post.findByPk(id)
-    post.update(req.body)
+
+    let data = req.body
+
+    if (req.file) {
+      let image = req.file.path.replace('public', '')
+      image = image.replace(/\\/g, '/')
+      data = {...data, image: image}
+
+      if (fs.existsSync('public' + post.image)) {
+        fs.unlink('public' + post.image, (err) => {
+          if (err) {
+            console.error('Error deleting image:', err);
+          }
+        });
+      }
+    }
+    post.update(data)
     res.json(post)
   } catch (error) {
     res.status(500).json(error.message)
